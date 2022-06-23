@@ -92,6 +92,8 @@ int main(void) {
     struct NeuralNetwork* NN = create_neuralNetwork(numInputs, numHiddenLayers, numHiddenNodes_PerLayer, numOutputs);
     printNeuralNetwork(NN, fp);
     FILE *runResults;
+
+    //Functionality for forward propagation
     runResults = fopen("Neural_Network_Tests.txt", "w");
     freeNeuralNetwork(NN);
     fclose(fp);
