@@ -90,12 +90,30 @@ int main(void) {
     FILE *fp;
     fp = fopen("Initial_Neural_Network.txt", "w");
     struct NeuralNetwork* NN = create_neuralNetwork(numInputs, numHiddenLayers, numHiddenNodes_PerLayer, numOutputs);
+    
     printNeuralNetwork(NN, fp);
     FILE *runResults;
     runResults = fopen("Neural_Network_Tests.txt", "w");
     freeNeuralNetwork(NN);
     fclose(fp);
     return 0;
+}
+
+//Generates test data from input array and output array
+//Incomplete... Will improve later and include ability to
+//read data in from file
+struct testCase* generateTestData(int inputsperCase, int numCases, double *inputs, double *outputs){
+    int c;
+    int i;
+    struct testCase** currData = malloc(sizeof(struct testCase*)*numCases);
+    for(c=0; c<numCases; c++){
+        struct testCase* currCase = malloc(sizeof(struct testCase));
+        for(i=0;i<inputsperCase;i++){
+            int inputIndex = (inputsperCase*c)+i;
+            currCase->inputData[i] = inputs[inputIndex];
+        }
+        currCase->outputData[c] = outputs[c];
+    }
 }
 
 double sigmoidDerivative(double val){
