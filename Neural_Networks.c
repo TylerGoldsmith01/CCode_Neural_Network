@@ -9,6 +9,7 @@
 #define numOutputs 1
 #define numTrainingSamples 4
 
+
 struct NeuralNetwork {
     int numLayers;
     struct layer** layers;
@@ -38,21 +39,44 @@ struct layer* generateLayer(int numNodes, int type);
 
 int main(void) {
     struct NeuralNetwork* NN = generateNeuralNetwork();
-    freeNeuralNetwork(NN);
+    generateConnections(NN);
+    //freeNeuralNetwork(NN);
 
+}
+
+//Iterate through node in each layer, then point each of these nodes to each node in next layer up
+void generateConnections(struct NeuralNetwork* NN){
+    int layer;
+    int node1;
+    int node2;
+    struct layer* currLayer;
+    struct layer* nextLayer;
+    struct node* currNode;
+    //Main loop to iterate through all layers of the neural network
+    for(layer=0; layer < NN->numLayers-1; layer++){
+        currLayer = NN->layers[layer];
+        nextLayer == NN->layers[layer+1];
+        //Iterate through all nodes in current layer
+        for(node1=0; node1 < currLayer->numNodes; node1++){
+            //Iterate through all nodes in next layer, and assign each to next in current node
+            for(node2=0; node2 < nextLayer->numNodes; node2++){
+                printf("Creating Connection between Node %d and Node %d in layer %d",node1,node2,layer);
+                currLayer->nodes[node1]->next[node2] = nextLayer->nodes[node2];
+            }
+        }
+    }
 }
 
 void freeNeuralNetwork(struct NeuralNetwork* NN){
     // Free allocated memory
-    for (int i = 0; i < NN->numLayers; i++) {
-        struct layer* currLayer = &NN->layers[i];
-        for (int j = 0; j < currLayer->numNodes; j++) {
-            free(currLayer->nodes[j]);
+    /*for (int i = 0; i < NN->numLayers; i++) {
+        for (int j = 0; j < NN->layers[i]->numNodes; j++) {
+            free(NN->layers[i]->nodes[j]);
         }
-        free(currLayer->nodes);
+        free(NN->layers[i]->nodes);
     }
     free(NN->layers);
-    free(NN);
+    free(NN);*/
 }
 
 // Create neural network, then populate with each layer of the neural network
