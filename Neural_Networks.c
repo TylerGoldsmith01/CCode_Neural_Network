@@ -40,6 +40,9 @@ struct NeuralNetwork* generateNeuralNetwork();
 struct layer* generateLayer(int, int);
 
 int main(void) {
+    double training_inputs[numTrainingSamples][numInputs];
+    double training_inputs[numTrainingSamples][numOutputs];
+    printf("HELLO\n");
     struct NeuralNetwork* NN = generateNeuralNetwork();
     generateConnections(NN);
     freeNeuralNetwork(NN);
@@ -63,7 +66,6 @@ void generateConnections(struct NeuralNetwork* NN){
             //Iterate through all nodes in next layer, and assign each to next in current node
             for(node2=0; node2 < nextLayer->numNodes; node2++){
                 printf("Creating Connection between Node %d and Node %d in layer %d\n",node1,node2,layer);
-                fflush(stdout);
                 currLayer->nodes[node1]->next[node2] = nextLayer->nodes[node2];
             }
         }
