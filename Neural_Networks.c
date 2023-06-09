@@ -34,14 +34,15 @@ struct connection {
 };
 
 // Function declarations
+void generateConnections(struct NeuralNetwork*);
+void freeNeuralNetwork(struct NeuralNetwork*);
 struct NeuralNetwork* generateNeuralNetwork();
-struct layer* generateLayer(int numNodes, int type);
+struct layer* generateLayer(int, int);
 
 int main(void) {
     struct NeuralNetwork* NN = generateNeuralNetwork();
     generateConnections(NN);
-    //freeNeuralNetwork(NN);
-
+    freeNeuralNetwork(NN);
 }
 
 //Iterate through node in each layer, then point each of these nodes to each node in next layer up
@@ -55,12 +56,14 @@ void generateConnections(struct NeuralNetwork* NN){
     //Main loop to iterate through all layers of the neural network
     for(layer=0; layer < NN->numLayers-1; layer++){
         currLayer = NN->layers[layer];
-        nextLayer == NN->layers[layer+1];
+        nextLayer = NN->layers[layer+1];
         //Iterate through all nodes in current layer
         for(node1=0; node1 < currLayer->numNodes; node1++){
+            currLayer->nodes[node1]->next = malloc(sizeof(struct node)*nextLayer->numNodes);
             //Iterate through all nodes in next layer, and assign each to next in current node
             for(node2=0; node2 < nextLayer->numNodes; node2++){
-                printf("Creating Connection between Node %d and Node %d in layer %d",node1,node2,layer);
+                printf("Creating Connection between Node %d and Node %d in layer %d\n",node1,node2,layer);
+                fflush(stdout);
                 currLayer->nodes[node1]->next[node2] = nextLayer->nodes[node2];
             }
         }
@@ -69,14 +72,14 @@ void generateConnections(struct NeuralNetwork* NN){
 
 void freeNeuralNetwork(struct NeuralNetwork* NN){
     // Free allocated memory
-    /*for (int i = 0; i < NN->numLayers; i++) {
+    for (int i = 0; i < NN->numLayers; i++) {
         for (int j = 0; j < NN->layers[i]->numNodes; j++) {
             free(NN->layers[i]->nodes[j]);
         }
         free(NN->layers[i]->nodes);
     }
     free(NN->layers);
-    free(NN);*/
+    free(NN);
 }
 
 // Create neural network, then populate with each layer of the neural network
@@ -90,10 +93,10 @@ struct NeuralNetwork* generateNeuralNetwork() {
     for (i = 0; i < numInputs; i++) {
         NN->layers[i] = generateLayer(numInputs, 0);
     }
-    for (i = 0; i < numHiddenLayers; i++) {
+    for (i = numInputs; i < numInputs + numHiddenLayers; i++) {
         NN->layers[i] = generateLayer(numHiddenNodes_PerLayer, 1);
     }
-    for (i = 0; i < numOutputs; i++) {
+    for (i = numInputs + numHiddenLayers; i < numInputs + numHiddenLayers + numOutputs; i++) {
         NN->layers[i] = generateLayer(numOutputs, 2);
     }
 
@@ -109,6 +112,7 @@ struct layer* generateLayer(int numNodes, int type) {
     currLayer->nodes = malloc(numNodes * sizeof(struct node*));
     for (int i = 0; i < numNodes; i++) {
         printf("Creating node %d of %d\n",i,numNodes);
+        fflush(stdout);
         currLayer->nodes[i] = malloc(sizeof(struct node));
     }
 
