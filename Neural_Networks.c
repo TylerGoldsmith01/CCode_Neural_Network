@@ -24,32 +24,38 @@ struct layer {
 
 struct node {
     double Bias;
-    struct node** next;
-    struct connection* connections;
+    struct connection** connections;
 };
 
 struct connection {
-    struct node* node2;
+    struct node* next;
     double weight;
 };
 
 // Function declarations
-void generateConnections(struct NeuralNetwork*);
+void initNeuralNetwork(struct NeuralNetwork*);
 void freeNeuralNetwork(struct NeuralNetwork*);
 struct NeuralNetwork* generateNeuralNetwork();
 struct layer* generateLayer(int, int);
 
+double initWeights();
+
 int main(void) {
     double training_inputs[numTrainingSamples][numInputs];
-    double training_inputs[numTrainingSamples][numOutputs];
+    double training_outputs[numTrainingSamples][numOutputs];
     printf("HELLO\n");
     struct NeuralNetwork* NN = generateNeuralNetwork();
-    generateConnections(NN);
+    initNeuralNetwork(NN);
     freeNeuralNetwork(NN);
 }
 
+//Initialize weights to random value 0-1
+double initWeights(){
+    return ((double)rand()/((double)RAND_MAX));
+};
+
 //Iterate through node in each layer, then point each of these nodes to each node in next layer up
-void generateConnections(struct NeuralNetwork* NN){
+void initNeuralNetwork(struct NeuralNetwork* NN){
     int layer;
     int node1;
     int node2;
@@ -62,11 +68,12 @@ void generateConnections(struct NeuralNetwork* NN){
         nextLayer = NN->layers[layer+1];
         //Iterate through all nodes in current layer
         for(node1=0; node1 < currLayer->numNodes; node1++){
-            currLayer->nodes[node1]->next = malloc(sizeof(struct node)*nextLayer->numNodes);
-            //Iterate through all nodes in next layer, and assign each to next in current node
+            currLayer->nodes[node1]->connections = malloc(sizeof(struct connection) * nextLayer->numNodes);
+            //Iterate through all nodes in next layer, and create connections between with a random weight
             for(node2=0; node2 < nextLayer->numNodes; node2++){
-                printf("Creating Connection between Node %d and Node %d in layer %d\n",node1,node2,layer);
-                currLayer->nodes[node1]->next[node2] = nextLayer->nodes[node2];
+                currLayer->nodes[node1]->connections[node2] = malloc(sizeof(struct connection));
+                currLayer->nodes[node1]->connections[node2]->next = nextLayer->nodes[node2];
+                currLayer->nodes[node1]->connections[node2]->weight = initWeights();
             }
         }
     }
