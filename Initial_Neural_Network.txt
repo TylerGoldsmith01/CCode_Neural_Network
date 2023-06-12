@@ -1,0 +1,30 @@
+Layer: 1
+	Node 1
+		Bias = 0.000000
+		Connections:
+			Node 0
+				Weight 0.001251
+			Node 1
+				Weight 0.563585
+	Node 1
+		Bias = 0.000000
+		Connections:
+			Node 0
+				Weight 0.193304
+			Node 1
+				Weight 0.808741
+Layer: 2
+	Node 2
+		Bias = 0.000000
+		Connections:
+			Node 0
+				Weight 0.585009
+			Node 1
+				Weight 0.479873
+	Node 2
+		Bias = 0.000000
+		Connections:
+			Node 0
+				Weight 0.350291
+			Node 1
+				Weight 0.895962

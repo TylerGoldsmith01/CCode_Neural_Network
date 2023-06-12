@@ -4,8 +4,8 @@
 
 // Parameters to determine the size of the neural network (NN)
 #define numInputs 2
-#define numHiddenNodes_PerLayer 2
-#define numHiddenLayers 1
+#define numHiddenNodes_PerLayer 3
+#define numHiddenLayers 2
 #define numOutputs 1
 #define numTrainingSamples 4
 
@@ -33,20 +33,25 @@ struct connection {
 };
 
 // Function declarations
-void initNeuralNetwork(struct NeuralNetwork*);
+void initNeuralNetwork(struct NeuralNetwork*, FILE*);
 void freeNeuralNetwork(struct NeuralNetwork*);
 struct NeuralNetwork* generateNeuralNetwork();
 struct layer* generateLayer(int, int);
-
 double initWeights();
 
 int main(void) {
+    // Store the initial Neural Network in a text file
+    FILE *fp;
+    fp = fopen("Initial_Neural_Network.txt", "w");
+
     double training_inputs[numTrainingSamples][numInputs];
     double training_outputs[numTrainingSamples][numOutputs];
-    printf("HELLO\n");
     struct NeuralNetwork* NN = generateNeuralNetwork();
-    initNeuralNetwork(NN);
+    initNeuralNetwork(NN, fp);
+
+    fclose(fp);
     freeNeuralNetwork(NN);
+    return 0;
 }
 
 //Initialize weights to random value 0-1
@@ -55,7 +60,7 @@ double initWeights(){
 };
 
 //Iterate through node in each layer, then point each of these nodes to each node in next layer up
-void initNeuralNetwork(struct NeuralNetwork* NN){
+void initNeuralNetwork(struct NeuralNetwork* NN, FILE* fp){
     int layer;
     int node1;
     int node2;
@@ -64,16 +69,22 @@ void initNeuralNetwork(struct NeuralNetwork* NN){
     struct node* currNode;
     //Main loop to iterate through all layers of the neural network
     for(layer=0; layer < NN->numLayers-1; layer++){
+        fprintf(fp, "Layer: %d\n",layer+1);
         currLayer = NN->layers[layer];
         nextLayer = NN->layers[layer+1];
         //Iterate through all nodes in current layer
         for(node1=0; node1 < currLayer->numNodes; node1++){
+            fprintf(fp, "\tNode %d\n",layer+1);
+            fprintf(fp, "\t\tBias = %lf\n",currLayer->nodes[node1]->Bias);
+            fprintf(fp, "\t\tConnections:\n");
             currLayer->nodes[node1]->connections = malloc(sizeof(struct connection) * nextLayer->numNodes);
             //Iterate through all nodes in next layer, and create connections between with a random weight
             for(node2=0; node2 < nextLayer->numNodes; node2++){
                 currLayer->nodes[node1]->connections[node2] = malloc(sizeof(struct connection));
                 currLayer->nodes[node1]->connections[node2]->next = nextLayer->nodes[node2];
                 currLayer->nodes[node1]->connections[node2]->weight = initWeights();
+                fprintf(fp, "\t\t\tNode %d\n",node2+1);
+                fprintf(fp, "\t\t\t\tWeight %lf\n",currLayer->nodes[node1]->connections[node2]->weight);
             }
         }
     }
