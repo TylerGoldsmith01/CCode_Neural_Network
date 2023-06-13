@@ -38,6 +38,8 @@ void freeNeuralNetwork(struct NeuralNetwork*);
 struct NeuralNetwork* generateNeuralNetwork();
 struct layer* generateLayer(int, int);
 double initWeights();
+double sigmoidFun(double);
+double sigmoidDerivative(double);
 
 int main(void) {
     // Store the initial Neural Network in a text file
@@ -53,7 +55,13 @@ int main(void) {
     freeNeuralNetwork(NN);
     return 0;
 }
+double sigmoidDerivative(double val){
+    return (val*(1-val));
+}
 
+double sigmoid(double val){
+    return (1 / (1+exp(-val)));
+}
 //Initialize weights to random value 0-1
 double initWeights(){
     return ((double)rand()/((double)RAND_MAX));
