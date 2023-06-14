@@ -13,7 +13,7 @@
 struct NeuralNetwork {
     int numLayers;
     struct layer** layers;
-    struct testData* testCases;
+    struct testData** testCases;
 };
 
 struct testData{
@@ -41,7 +41,7 @@ struct connection {
 // Function declarations
 void initNeuralNetwork(struct NeuralNetwork*, FILE*);
 void freeNeuralNetwork(struct NeuralNetwork*);
-struct NeuralNetwork* generateNeuralNetwork();
+struct NeuralNetwork* generateNeuralNetwork(int , int, int, int);
 struct layer* generateLayer(int, int);
 double initWeights();
 double sigmoidFun(double);
@@ -52,9 +52,7 @@ int main(void) {
     FILE *fp;
     fp = fopen("Initial_Neural_Network.txt", "w");
 
-    double training_inputs[numTrainingSamples][numInputs];
-    double training_outputs[numTrainingSamples][numOutputs];
-    struct NeuralNetwork* NN = generateNeuralNetwork();
+    struct NeuralNetwork* NN = generateNeuralNetwork(numInputs, numHiddenLayers, numHiddenNodes_PerLayer, numOutputs);
     initNeuralNetwork(NN, fp);
 
     fclose(fp);
@@ -130,17 +128,17 @@ void freeNeuralNetwork(struct NeuralNetwork* NN){
 }
 
 // Create neural network, then populate with each layer of the neural network
-struct NeuralNetwork* generateNeuralNetwork() {
+struct NeuralNetwork* generateNeuralNetwork(int num_inputs, int num_hiddenLayers, int num_hiddenNodes_perLayer, int num_outputs) {
     struct NeuralNetwork* NN = malloc(sizeof(struct NeuralNetwork));
-    NN->numLayers = numHiddenLayers + 2; // Input layer + hidden layers + output layer
+    NN->numLayers = num_hiddenLayers + 2; // Input layer + hidden layers + output layer
 
     NN->layers = malloc(NN->numLayers * sizeof(struct layer));
 
     int i;
-    NN->layers[0] = generateLayer(numInputs, 0);
-    NN->layers[numHiddenLayers + 1] = generateLayer(numOutputs, 2);
-    for (i = 1; i < numHiddenLayers+1; i++) {
-        NN->layers[i] = generateLayer(numHiddenNodes_PerLayer, 1);
+    NN->layers[0] = generateLayer(num_inputs, 0);
+    NN->layers[num_hiddenLayers + 1] = generateLayer(num_outputs, 2);
+    for (i = 1; i < num_hiddenLayers+1; i++) {
+        NN->layers[i] = generateLayer(num_hiddenNodes_perLayer, 1);
     }
 
     return NN;
