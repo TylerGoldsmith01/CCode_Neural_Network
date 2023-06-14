@@ -13,6 +13,12 @@
 struct NeuralNetwork {
     int numLayers;
     struct layer** layers;
+    struct testData* testCases;
+};
+
+struct testData{
+    double *inputData;
+    double *outputData;
 };
 
 struct layer {

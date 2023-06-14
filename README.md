@@ -1,5 +1,5 @@
 # Neural Network Coded in C Programming Language<br>
-## Data Structures of Neural Network##<br>
+## Data Structures of Neural Network<br>
 I decided to use data structures to orgranize the nural network rather than arrays because they are easier to visualize, and better support customizability and expandability of the neural network.<br>
 **node Struct**<br>
 Sometimes known as neuron's these are the lowest level piece of the neural network. They are simple and contain the bias of the nodes, and an array cointaining all the connections to the next node of the neural network.
