@@ -20,6 +20,7 @@ struct NeuralNetwork {
 struct testCase{
     double *inputData;
     double *outputData;
+    int testNumber;
 };
 
 struct layer {
@@ -48,7 +49,35 @@ double initWeights();
 double sigmoidFun(double);
 double sigmoidDerivative(double);
 
+//struct testCase ** initializeCases(double* , double*);
+void shuffleCases(struct testCase **, int );
+void swaptestCases(struct testCase*, struct testCase*);
+
 int main(void) {
+    //Quick Hardcoded Test Shuffle Functionality
+    FILE *fpShuffleTest;
+    fpShuffleTest = fopen("Shuffle_Test.txt", "w");
+    struct testCase** testCases=malloc(10 * sizeof(struct testCase*));
+    for (int i=0;i<10;i++){
+        testCases[i]=malloc(sizeof(struct testCase));
+        testCases[i]->testNumber = i;
+    }
+
+    for (int i=0 ; i < 100; i++){
+        for (int j=0; j<10;j++){
+            fprintf(fpShuffleTest, "%d ",testCases[j]->testNumber);
+        }
+        fprintf(fpShuffleTest, "\n");
+        shuffleCases(testCases, 10);
+    }
+    for (int i=0;i<10;i++){
+        free(testCases[i]);
+    }
+    free(testCases);
+    fclose(fpShuffleTest);
+    //EndQuick Hardcoded Test Shuffle Functionality
+
+
     // Store the initial Neural Network in a text file
     FILE *fp;
     fp = fopen("Initial_Neural_Network.txt", "w");
@@ -76,14 +105,19 @@ double initWeights(){
 //Start at last element and place in random spot from its place to the left... iterate leftward and repeat until first element
 void shuffleCases(struct testCase **testCases, int numTestData){
     int i;
-    for(i=numTestData-1; i > 0; i--){
-        int newIndex = rand() % (numTestData+1);
-        swaptestCases(testCases[i],testCases[newIndex]);
+    for(i= numTestData-1 ; i > 0; i--){
+        int newIndex = rand() % (i+1);
+        struct testCase *temp = testCases[i];
+        testCases[i] = testCases[newIndex];
+        testCases[newIndex] = temp;
+        //swaptestCases(testCases[i],testCases[newIndex]);
     }
 }
 
 void swaptestCases(struct testCase *TD1, struct testCase *TD2){
-    struct testData *temp;
+    struct testCase temp = *TD1;
+    *TD1 = *TD2;
+    *TD1 = temp;
 }
 
 //Iterate through node in each layer, then point each of these nodes to each node in next layer up
