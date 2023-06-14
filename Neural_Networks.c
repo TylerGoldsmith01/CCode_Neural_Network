@@ -13,10 +13,11 @@
 struct NeuralNetwork {
     int numLayers;
     struct layer** layers;
-    struct testData** testCases;
+    struct testCase** testCases;
+    int numTestCases;
 };
 
-struct testData{
+struct testCase{
     double *inputData;
     double *outputData;
 };
@@ -70,6 +71,20 @@ double sigmoid(double val){
 double initWeights(){
     return ((double)rand()/((double)RAND_MAX));
 };
+
+//Fisher-Yates shuffle algorithm...time complexity O(n)
+//Start at last element and place in random spot from its place to the left... iterate leftward and repeat until first element
+void shuffleCases(struct testCase **testCases, int numTestData){
+    int i;
+    for(i=numTestData-1; i > 0; i--){
+        int newIndex = rand() % (numTestData+1);
+        swaptestCases(testCases[i],testCases[newIndex]);
+    }
+}
+
+void swaptestCases(struct testCase *TD1, struct testCase *TD2){
+    struct testData *temp;
+}
 
 //Iterate through node in each layer, then point each of these nodes to each node in next layer up
 void initNeuralNetwork(struct NeuralNetwork* NN, FILE* fp){
