@@ -1,7 +1,7 @@
 Layer: 1 Type: Input
 	Node 1
 		Bias = 0.000000
-		Connections:
+		nextNodes:
 			Layer 2 Node 1
 				Weight 0.869442
 			Layer 2 Node 2
@@ -10,7 +10,7 @@ Layer: 1 Type: Input
 				Weight 0.039125
 	Node 2
 		Bias = 0.000000
-		Connections:
+		nextNodes:
 			Layer 2 Node 1
 				Weight 0.416669
 			Layer 2 Node 2
@@ -20,17 +20,17 @@ Layer: 1 Type: Input
 Layer: 2 Type: Hidden
 	Node 1
 		Bias = 0.000000
-		Connections:
+		nextNodes:
 			Layer 3 Node 1
 				Weight 0.164861
 	Node 2
 		Bias = 0.000000
-		Connections:
+		nextNodes:
 			Layer 3 Node 1
 				Weight 0.211280
 	Node 3
 		Bias = 0.000000
-		Connections:
+		nextNodes:
 			Layer 3 Node 1
 				Weight 0.116916
 Layer: 3 Type: Output
