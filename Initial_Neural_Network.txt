@@ -1,38 +1,45 @@
 Layer: 1 Type: Input
 	Node 1
 		Bias = 0.000000
-		nextNodes:
-			Layer 2 Node 1
-				Weight 0.869442
-			Layer 2 Node 2
-				Weight 0.761376
-			Layer 2 Node 3
-				Weight 0.039125
 	Node 2
 		Bias = 0.000000
-		nextNodes:
-			Layer 2 Node 1
-				Weight 0.416669
-			Layer 2 Node 2
-				Weight 0.936125
-			Layer 2 Node 3
-				Weight 0.067751
 Layer: 2 Type: Hidden
 	Node 1
 		Bias = 0.000000
-		nextNodes:
-			Layer 3 Node 1
-				Weight 0.164861
 	Node 2
 		Bias = 0.000000
-		nextNodes:
-			Layer 3 Node 1
-				Weight 0.211280
 	Node 3
 		Bias = 0.000000
-		nextNodes:
-			Layer 3 Node 1
-				Weight 0.116916
 Layer: 3 Type: Output
 	Node 1
 		Bias = 0.000000
+
+
+EDGES
+Edge 0:
+	node 0 and 2
+	0.001251
+Edge 1:
+	node 0 and 3
+	0.563585
+Edge 2:
+	node 0 and 4
+	0.193304
+Edge 3:
+	node 1 and 2
+	0.808741
+Edge 4:
+	node 1 and 3
+	0.585009
+Edge 5:
+	node 1 and 4
+	0.479873
+Edge 6:
+	node 2 and 5
+	0.350291
+Edge 7:
+	node 3 and 5
+	0.895962
+Edge 8:
+	node 4 and 5
+	0.822840
