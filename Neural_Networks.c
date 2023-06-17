@@ -37,6 +37,8 @@ struct node {
     double Bias;
     double value;
     int designator;
+    struct edge **nextEdges;
+    struct edge **prevEdges;
 };
 
 struct edge {
@@ -118,7 +120,7 @@ void shuffleCases(struct testCase **testCases, int numTestData){
 //Iterate through node in each layer, then point each of these nodes to each node in next layer up
 void printNeuralNetwork(struct NeuralNetwork* NN, FILE* fp){
     int layer;
-    int edge;
+    int e;
     int node1;
     int node2;
     //Main loop to iterate through all layers of the neural network
@@ -136,62 +138,84 @@ void printNeuralNetwork(struct NeuralNetwork* NN, FILE* fp){
         }
         //Iterate through all nodes
         for(node1=0; node1 < NN->layers[layer]->numNodes; node1++){
-            fprintf(fp, "\tNode %d\n",node1+1);
+            fprintf(fp, "\tNode: %d\n",NN->layers[layer]->nodes[node1]->designator);
             fprintf(fp, "\t\tBias = %lf\n",NN->layers[layer]->nodes[node1]->Bias);
         }
     }
     fprintf(fp, "\n\nEDGES\n");
-    for(edge = 0; edge < NN->numEdges; edge ++){
-        fprintf(fp, "Edge %d:\n\tnode %d and %d\n\t%f\n", edge, NN->edges[edge]->node1->designator, NN->edges[edge]->node2->designator, NN->edges[edge]->weight);
+    for(e = 0; e < NN->numEdges; e ++){
+        fprintf(fp, "Edge %d:\n\tnode %d and %d\n\t%f\n", e ,NN->edges[e]->node1->designator, NN->edges[e]->node2->designator, NN->edges[e]->weight);
     }
 }
 
 struct NeuralNetwork* create_neuralNetwork( int num_inputs, int num_hiddenLayers, int num_hiddenNodes_perLayer, int num_outputs){
     struct NeuralNetwork* NN;
-    int layer, currnode, nextnode;
-    int numLayers = numHiddenLayers + 2;
+    int layer, edge, num_currnode, num_nextnode, prevnode;
+    int numLayers = num_hiddenLayers + 2;
     //Setup entire Neural Network struct
     NN = malloc(sizeof(struct NeuralNetwork));
     NN->numLayers = numLayers;
     NN->layers = malloc(NN->numLayers * sizeof(struct layer));
     int node_designator = 0;
 
-    ////SETUP NODE STRUCTURE OF NEURAL NETWORK
+    //////SETUP NODE STRUCTURE OF NEURAL NETWORK///////
     for(layer = 0 ; layer < numLayers; layer++){
         //Setup each layer within Neural Network
-        NN->layers[layer] = malloc(sizeof(struct layer));
-        NN->layers[layer]->numNodes = (layer==0)?(num_inputs):((layer==numLayers-1)?(num_outputs):(num_hiddenNodes_perLayer));
-        NN->layers[layer]->nodes = malloc(NN->layers[layer]->numNodes * sizeof(struct node*));
-        NN->layers[layer]->type = (layer==0)?('i'):((layer==numLayers-1)?('o'):('h'));
-        for(currnode = 0; currnode < NN->layers[layer]->numNodes; currnode++){
+        struct layer* currLayer = malloc(sizeof(struct layer));
+        currLayer->numNodes = (layer==0)?(num_inputs):((layer==numLayers-1)?(num_outputs):(num_hiddenNodes_perLayer));
+        currLayer->nodes = malloc(currLayer->numNodes * sizeof(struct node*));
+        currLayer->type = (layer==0)?('i'):((layer==numLayers-1)?('o'):('h'));
+
+        int numNodes_nextLayer=0;
+        int numNodes_prevLayer=0; 
+        if(layer != numLayers - 1) numNodes_nextLayer= (layer==numLayers-2)?(num_outputs):(num_hiddenNodes_perLayer);
+        if(layer != 0) numNodes_prevLayer = (layer==1)?(num_inputs):(num_hiddenNodes_perLayer);
+        
+        for(num_currnode = 0; num_currnode < currLayer->numNodes; num_currnode++){
             //Define the individual nodes
-            NN->layers[layer]->nodes[currnode] = malloc(sizeof(struct node));
-            NN->layers[layer]->nodes[currnode]->designator = node_designator;
+            struct node* currNode = malloc(sizeof(struct node));
+            currNode->designator = node_designator;
             node_designator ++;
+            currLayer->nodes[num_currnode] = currNode;
+            if(layer != numLayers - 1) currNode->nextEdges = malloc(numNodes_nextLayer * sizeof(struct edge*));
+            if(layer != 0) currNode->prevEdges = malloc(numNodes_prevLayer * sizeof(struct edge*));
         }
+
+        NN->layers[layer] = currLayer;
     }
-    //SETUP EDGE STRUCTURE OF NEURAL NETWORK
+
+    //////SETUP EDGE STRUCTURE OF NEURAL NETWORK//////
     int input_to_hidden = (num_inputs * num_hiddenNodes_perLayer);
     int hidden_to_hidden = (num_hiddenNodes_perLayer * num_hiddenNodes_perLayer);
     int hidden_to_output = (num_hiddenNodes_perLayer * num_outputs);
-
-    //Calculate total; number of edges in neural network
     int numEdges = input_to_hidden + ((num_hiddenLayers-1) * hidden_to_hidden) + hidden_to_output;
     NN->numEdges = numEdges;
 
     NN->edges = malloc(numEdges * sizeof(struct edge*));
-    int edge_designator=0;
-    for(layer = 0 ; layer < numLayers-1; layer++){
-        int nodes_in_next_layer = (layer == numLayers-2)?(num_outputs):(num_hiddenNodes_perLayer);
+    for(edge = 0; edge < numEdges; edge ++)
+        NN->edges[edge] = malloc(sizeof(struct edge));
 
-        //create an edge between each current node, and all the nodes in the next layer
-        for(currnode = 0; currnode < NN->layers[layer]->numNodes; currnode++){
-            for(nextnode = 0; nextnode < nodes_in_next_layer; nextnode++){
-                    NN->edges[edge_designator] = malloc(sizeof(struct edge));
-                    NN->edges[edge_designator]->node1 = NN->layers[layer]->nodes[currnode];
-                    NN->edges[edge_designator]->node2 = NN->layers[layer+1]->nodes[nextnode];
-                    NN->edges[edge_designator]->weight = initWeights();
-                    edge_designator ++;
+    int edge_counter=0;
+
+    for(layer = 0 ; layer < numLayers-1; layer++){
+        struct layer* currLayer = NN->layers[layer];
+        struct layer* nextLayer = NN->layers[layer+1];
+        int nodes_in_next_layer = (layer == numLayers-1) ? (0):(
+            (layer == numLayers - 2) ? (num_outputs):(num_hiddenNodes_perLayer)
+            );
+
+        for(num_currnode = 0; num_currnode < currLayer->numNodes; num_currnode++){
+            struct node* currNode = currLayer->nodes[num_currnode];
+            for(num_nextnode = 0; num_nextnode < nodes_in_next_layer; num_nextnode++){
+                    struct node* nextNode = nextLayer->nodes[num_nextnode];
+                    struct edge* currEdge= NN->edges[edge_counter];
+
+                    currNode->nextEdges[num_nextnode] = currEdge;
+                    nextNode->prevEdges[num_currnode] = currEdge;
+                    currEdge->node1 = currNode;
+                    currEdge->node2 = nextNode;
+                    currEdge->weight = initWeights();
+                    edge_counter ++;
             }
         }
     }

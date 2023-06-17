@@ -1,17 +1,17 @@
 Layer: 1 Type: Input
-	Node 1
+	Node: 0
 		Bias = 0.000000
-	Node 2
+	Node: 1
 		Bias = 0.000000
 Layer: 2 Type: Hidden
-	Node 1
+	Node: 2
 		Bias = 0.000000
-	Node 2
+	Node: 3
 		Bias = 0.000000
-	Node 3
+	Node: 4
 		Bias = 0.000000
 Layer: 3 Type: Output
-	Node 1
+	Node: 5
 		Bias = 0.000000
 
 
