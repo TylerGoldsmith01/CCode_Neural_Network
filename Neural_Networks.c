@@ -52,7 +52,7 @@ struct NeuralNetwork* create_neuralNetwork(int, int, int, int);
 void printNeuralNetwork(struct NeuralNetwork*, FILE*);
 void freeNeuralNetwork(struct NeuralNetwork*);
 
-double initWeights();
+double randomNum();
 double sigmoid(double);
 double sigmoidDerivative(double);
 
@@ -100,13 +100,13 @@ double sigmoidDerivative(double val){
 double sigmoid(double val){
     return (1 / (1+exp(-val)));
 }
-//Initialize weights to random value 0-1
-double initWeights(){
+//Initialize weights to randomNum value 0-1
+double randomNum(){
     return ((double)rand()/((double)RAND_MAX));
 };
 
 //Fisher-Yates shuffle algorithm...time complexity O(n)
-//Start at last element and place in random spot from its place to the left... iterate leftward and repeat until first element
+//Start at last element and place in randomNum spot from its place to the left... iterate leftward and repeat until first element
 void shuffleCases(struct testCase **testCases, int numTestData){
     int i;
     for(i= numTestData-1 ; i > 0; i--){
@@ -114,6 +114,18 @@ void shuffleCases(struct testCase **testCases, int numTestData){
         struct testCase *temp = testCases[i];
         testCases[i] = testCases[newIndex];
         testCases[newIndex] = temp;
+    }
+}
+
+void trainLoop(int numRounds, struct NeuralNetwork *NN){
+    //Run through training loop a parameter designated number of times
+    for (int round = 0; round < numRounds; round++){
+        //Shuffle up all the test cases
+        shuffleCases(NN->testCases, NN->numTestCases);
+        //Run through every test case for each round
+        for(int test = 0; test < NN->numTestCases; test++){
+
+        }
     }
 }
 
@@ -172,10 +184,11 @@ struct NeuralNetwork* create_neuralNetwork( int num_inputs, int num_hiddenLayers
         if(layer != 0) numNodes_prevLayer = (layer==1)?(num_inputs):(num_hiddenNodes_perLayer);
         
         for(num_currnode = 0; num_currnode < currLayer->numNodes; num_currnode++){
-            //Define the individual nodes
+            //Define node in neural network
             struct node* currNode = malloc(sizeof(struct node));
             currNode->designator = node_designator;
             node_designator ++;
+            currNode->Bias = 1;
             currLayer->nodes[num_currnode] = currNode;
             if(layer != numLayers - 1) currNode->nextEdges = malloc(numNodes_nextLayer * sizeof(struct edge*));
             if(layer != 0) currNode->prevEdges = malloc(numNodes_prevLayer * sizeof(struct edge*));
@@ -214,7 +227,7 @@ struct NeuralNetwork* create_neuralNetwork( int num_inputs, int num_hiddenLayers
                     nextNode->prevEdges[num_currnode] = currEdge;
                     currEdge->node1 = currNode;
                     currEdge->node2 = nextNode;
-                    currEdge->weight = initWeights();
+                    currEdge->weight = randomNum();
                     edge_counter ++;
             }
         }
