@@ -37,6 +37,9 @@ struct node {
     double Bias;
     double value;
     int designator;
+
+    int num_prevEdges;
+    int num_nextEdges;
     struct edge **nextEdges;
     struct edge **prevEdges;
 };
@@ -122,9 +125,37 @@ void trainLoop(int numRounds, struct NeuralNetwork *NN){
     for (int round = 0; round < numRounds; round++){
         //Shuffle up all the test cases
         shuffleCases(NN->testCases, NN->numTestCases);
+
         //Run through every test case for each round
         for(int test = 0; test < NN->numTestCases; test++){
+            struct testCase *Case = NN->testCases[test];
+            int layer;
+            int node;
 
+            //Set training data to input nodes
+            for(node = 0; node < NN->layers[0]->numNodes; node++){
+                NN->layers[0]->nodes[node]->value = Case->inputData[node];
+            }
+
+            //Forward Propagate through all nodes in hidden layers
+            for(layer = 1; layer < NN->numLayers; layer++){
+                struct layer *currLayer = NN->layers[layer];
+                //Calculate previous propagation equation for each node in layer
+                for(node = 0; node < currLayer->numNodes; node++){
+                    struct node *currNode = currLayer->nodes[node];
+                    double activation = currNode->Bias;
+
+                    for(int edge; edge < currNode->num_prevEdges; edge++){
+                        struct edge* currEdge = currNode->prevEdges[edge];
+                        struct node* prevNode = currEdge->node1;
+                        double edgeWeight = currEdge->weight;
+                            //Increment activation by the value of previous node times edge weight
+                            activation += ((prevNode->value) * (currEdge->weight));
+                    }
+                    //Set the value of the current node to sigmoid of the activation sum
+                    currNode->value = sigmoid(activation);
+                }
+            }
         }
     }
 }
@@ -188,7 +219,12 @@ struct NeuralNetwork* create_neuralNetwork( int num_inputs, int num_hiddenLayers
             struct node* currNode = malloc(sizeof(struct node));
             currNode->designator = node_designator;
             node_designator ++;
+            //For now initialize bias of all nodes to 1
             currNode->Bias = 1;
+
+            //Initialize number of previous and next edges to 0 to iterate later
+            currNode->num_nextEdges=0;
+            currNode->num_prevEdges=0;
             currLayer->nodes[num_currnode] = currNode;
             if(layer != numLayers - 1) currNode->nextEdges = malloc(numNodes_nextLayer * sizeof(struct edge*));
             if(layer != 0) currNode->prevEdges = malloc(numNodes_prevLayer * sizeof(struct edge*));
@@ -224,7 +260,11 @@ struct NeuralNetwork* create_neuralNetwork( int num_inputs, int num_hiddenLayers
                     struct edge* currEdge= NN->edges[edge_counter];
 
                     currNode->nextEdges[num_nextnode] = currEdge;
+                    currNode->num_nextEdges ++;
+
                     nextNode->prevEdges[num_currnode] = currEdge;
+                    nextNode->num_prevEdges ++;
+
                     currEdge->node1 = currNode;
                     currEdge->node2 = nextNode;
                     currEdge->weight = randomNum();
