@@ -12,6 +12,6 @@ The layers struct is mostly used in the connection routing process and for keepi
 ### NeuralNetwork struct<br>
 Finally the neural network struct is the outermost organization of the neural network, and it contains all the other lower level nodes within in a hierarchical structure, as well as all the training test cases data. It contains an array of layers which points to all the nodes within the layer. Additionally it contains a global list of all the edges that connect the nodes.<br>
 
-##Training Loop<br>
+## Training Loop<br>
 ### Forward Propagation<br>
 Forward propagation makes up a major part of the training process where the value of each node is determined by the summation of the product of the previous values and edged weights. This value is then passed into a sigmoid function which essentially bounds the result between 0 and 1 to keep the numbers within a reasonable range. This process iterates up through every node in the neural network allowing the updated values of each node to be used in calculations for the next row.<br>
