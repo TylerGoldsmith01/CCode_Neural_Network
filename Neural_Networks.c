@@ -91,6 +91,8 @@ int main(void) {
     fp = fopen("Initial_Neural_Network.txt", "w");
     struct NeuralNetwork* NN = create_neuralNetwork(numInputs, numHiddenLayers, numHiddenNodes_PerLayer, numOutputs);
     printNeuralNetwork(NN, fp);
+    FILE *runResults;
+    runResults = fopen("Neural_Network_Tests.txt", "w");
     freeNeuralNetwork(NN);
     fclose(fp);
     return 0;
@@ -120,24 +122,34 @@ void shuffleCases(struct testCase **testCases, int numTestData){
     }
 }
 
-void trainLoop(int numRounds, struct NeuralNetwork *NN){
+void trainLoop(int numRounds, struct NeuralNetwork *NN, FILE* fp){
     //Run through training loop a parameter designated number of times
     for (int round = 0; round < numRounds; round++){
         //Shuffle up all the test cases
+        fprintf(fp, "Shuffling Test Cases...\nRound %d\n",round);
         shuffleCases(NN->testCases, NN->numTestCases);
 
         //Run through every test case for each round
         for(int test = 0; test < NN->numTestCases; test++){
+            fprintf(fp, "\tTest %d\n",test);
             struct testCase *Case = NN->testCases[test];
             int layer;
             int node;
 
+            fprintf(fp, "\t\tInput Data:\n");
             //Set training data to input nodes
             for(node = 0; node < NN->layers[0]->numNodes; node++){
                 NN->layers[0]->nodes[node]->value = Case->inputData[node];
+                fprintf(fp, "\t\t\tInput Node %d: %f\n",node, Case->inputData[node]);
             }
 
-            //Forward Propagate through all nodes in hidden layers
+            //Print the expected output
+            fprintf(fp, "\t\tExpected Output\n");
+            for(node = 0; node < NN->layers[NN->numLayers - 1]->numNodes; node++){
+                fprintf(fp, "\t\t\tOutput Node %d: %f\n",node, Case->outputData[node]);
+            }
+
+            //Forward Propagate through all nodes in hidden and output layers
             for(layer = 1; layer < NN->numLayers; layer++){
                 struct layer *currLayer = NN->layers[layer];
                 //Calculate previous propagation equation for each node in layer
@@ -155,6 +167,11 @@ void trainLoop(int numRounds, struct NeuralNetwork *NN){
                     //Set the value of the current node to sigmoid of the activation sum
                     currNode->value = sigmoid(activation);
                 }
+            }
+            //Print the output of NN
+            fprintf(fp, "\t\tActual Output\n");
+            for(node = 0; node < NN->layers[NN->numLayers - 1]->numNodes; node++){
+                fprintf(fp, "\t\t\tOutput Node %d: %f\n",node, NN->layers[NN->numLayers - 1]->nodes[node]->value);
             }
         }
     }
