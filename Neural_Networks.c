@@ -93,7 +93,7 @@ int main(void) {
     printNeuralNetwork(NN, fp);
     FILE *runResults;
 
-    //Functionality for forward propagation
+    //Functionality for forward propagation with test cases
     runResults = fopen("Neural_Network_Tests.txt", "w");
     freeNeuralNetwork(NN);
     fclose(fp);
