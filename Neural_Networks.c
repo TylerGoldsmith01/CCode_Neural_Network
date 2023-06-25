@@ -2,13 +2,6 @@
 #include <stdio.h>
 #include <math.h>
 
-// Parameters to determine the size of the neural network (NN)
-#define numInputs 2
-#define numHiddenNodes_PerLayer 3
-#define numHiddenLayers 1
-#define numOutputs 1
-#define numTrainingSamples 4
-
 
 struct NeuralNetwork {
     int numLayers;
@@ -54,15 +47,13 @@ struct edge {
 struct NeuralNetwork* create_neuralNetwork(int, int, int, int);
 void printNeuralNetwork(struct NeuralNetwork*, FILE*);
 void freeNeuralNetwork(struct NeuralNetwork*);
-
 double randomNum();
 double sigmoid(double);
 double sigmoidDerivative(double);
-
 void shuffleCases(struct testCase **, int );
 
+/*
 int main(void) {
-    /*
     //Quick Hardcoded Test Shuffle Functionality
     FILE *fpShuffleTest;
     fpShuffleTest = fopen("Shuffle_Test.txt", "w");
@@ -85,7 +76,6 @@ int main(void) {
     free(testCases);
     fclose(fpShuffleTest);
     //EndQuick Hardcoded Test Shuffle Functionality
-*/
     // Store the initial Neural Network in a text file
     FILE *fp;
     fp = fopen("Initial_Neural_Network.txt", "w");
@@ -99,7 +89,7 @@ int main(void) {
     fclose(fp);
     return 0;
 }
-
+*/
 double sigmoidDerivative(double val){
     return (val*(1-val));
 }
