@@ -5,11 +5,13 @@
 #include <stdio.h>
 #include <math.h>
 
+/*
 #define numInputs 2
 #define numHiddenNodes_PerLayer 3
 #define numHiddenLayers 1
 #define numOutputs 1
 #define numTrainingSamples 4
+*/
 
 struct testCase {
     double* inputData;

@@ -1,18 +1,18 @@
 Layer: 1 Type: Input
 	Node: 0
-		Bias = 0.000000
+		Bias = 1.000000
 	Node: 1
-		Bias = 0.000000
+		Bias = 1.000000
 Layer: 2 Type: Hidden
 	Node: 2
-		Bias = 0.000000
+		Bias = 1.000000
 	Node: 3
-		Bias = 0.000000
+		Bias = 1.000000
 	Node: 4
-		Bias = 0.000000
+		Bias = 1.000000
 Layer: 3 Type: Output
 	Node: 5
-		Bias = 0.000000
+		Bias = 1.000000
 
 
 EDGES
