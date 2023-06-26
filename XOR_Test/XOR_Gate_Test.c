@@ -1,4 +1,4 @@
-#include "Neural_Networks.h"
+#include "CCode_Neural_Network/Functional_Code/Neural_Networks.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
@@ -12,7 +12,6 @@
 
 int main(void) {
     // Store the initial Neural Network in a text file
-    printf("Test case Successful");
     FILE *fp;
     fp = fopen("Initial_Neural_Network.txt", "w");
     struct NeuralNetwork* NN = create_neuralNetwork(numInputs, numHiddenLayers, numHiddenNodes_PerLayer, numOutputs);
