@@ -55,6 +55,8 @@ struct NeuralNetwork {
 
 // Function declarations
 struct NeuralNetwork* create_neuralNetwork(int, int, int, int);
+struct testCase** generateCaseData(FILE*,FILE*, int, int);
+
 void printNeuralNetwork(struct NeuralNetwork*, FILE*);
 void freeNeuralNetwork(struct NeuralNetwork*);
 void trainLoop(int numRounds, struct NeuralNetwork* NN, FILE* fp);

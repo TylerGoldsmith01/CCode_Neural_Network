@@ -45,12 +45,68 @@ struct edge {
 
 // Function declarations
 struct NeuralNetwork* create_neuralNetwork(int, int, int, int);
+struct testCase** generateCaseData(FILE*,FILE*, int, int);
 void printNeuralNetwork(struct NeuralNetwork*, FILE*);
 void freeNeuralNetwork(struct NeuralNetwork*);
 double randomNum();
 double sigmoid(double);
 double sigmoidDerivative(double);
 void shuffleCases(struct testCase **, int );
+
+struct testCase** generateCaseData(FILE* inFP,FILE* outFP, int numInputs, int numOutputs){
+    int numInputCases=0;
+    int currNumInputs;
+    int readingCase=0;
+    char currChar;
+    while((currChar = fgetc(inFP))!=EOF){
+        printf("%c",currChar);
+        if(readingCase==1){
+            if(currChar==' ') currNumInputs++;
+            else if(currChar=='}'){
+                if(currNumInputs!=numInputs){
+                    printf("Invalid Input File, Error at Case %d",numInputCases+1);
+                    return NULL;
+                }
+                numInputCases++;
+                readingCase=0;
+            }
+        }
+        if(currChar=='{'){
+            readingCase=1;
+            currNumInputs=1;
+        }
+    }
+    printf("\n%d Input cases detected\n", numInputCases);
+    
+    int numOutputCases=0;
+    int currNumOutputs;
+    readingCase=0;
+    while((currChar = fgetc(outFP))!=EOF){
+        printf("%c",currChar);
+        if(readingCase==1){
+            if(currChar==' ') currNumOutputs++;
+            else if(currChar=='}'){
+                if(currNumOutputs!=numOutputs){
+                    printf("Invalid Input File, Error at Case %d",numOutputCases+1);
+                    return NULL;
+                }
+                numOutputCases++;
+                readingCase=0;
+            }
+        }
+        if(currChar=='{'){
+            readingCase=1;
+            currNumOutputs=1;
+        }
+
+        if(numInputCases!=numOutputCases){
+            printf("\nInconsistent Input and Output case files, returning NULL\n");
+            return NULL;
+        }
+    }
+    printf("\n%d Output cases detected\n", numOutputCases);
+    return NULL;
+}
 
 /*
 int main(void) {
